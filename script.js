@@ -1,274 +1,408 @@
+let songs = [];
+
+fetch("songs.json")
+  .then(response => response.json())
+  .then(data => {
+    songs = data;
+
+    createPlaylist();
+    loadSong(0);
+  });
+
+function createPlaylist(){
+
+  const playlist =
+  document.getElementById("playlist");
+
+  playlist.innerHTML = "";
+
+  songs.forEach((song,index)=>{
+
+    const li =
+    document.createElement("li");
+
+    li.innerHTML = `
+      <div>
+        <strong>${song.title}</strong>
+        <br>
+        <small>${song.artist}</small>
+      </div>
+    `;
+
+    li.addEventListener("click",()=>{
+
+      currentSong = index;
+
+      loadSong(index);
+
+      audio.play();
+
+    });
+
+    playlist.appendChild(li);
+
+  });
+
+}
+
 const audio = document.getElementById("audio");
-const cover = document.getElementById("cover");
-const songTitle = document.getElementById("song-title");
+
+const title = document.getElementById("title");
 const artist = document.getElementById("artist");
-const playBtn = document.getElementById("play");
-const prevBtn = document.getElementById("prev");
-const nextBtn = document.getElementById("next");
-const shuffleBtn = document.getElementById("shuffle");
-const repeatBtn = document.getElementById("repeat");
-const volume = document.getElementById("volume");
+
+const miniTitle = document.getElementById("miniTitle");
+const miniArtist = document.getElementById("miniArtist");
+
+const cover = document.getElementById("cover");
+const miniCover = document.getElementById("miniCover");
+
+const playlist = document.getElementById("playlist");
+
 const progress = document.getElementById("progress");
-const progressContainer = document.getElementById("progress-container");
-const currentTimeEl = document.getElementById("current-time");
+
+const volume = document.getElementById("volume");
+
+const currentTimeEl = document.getElementById("currentTime");
 const durationEl = document.getElementById("duration");
-const songItems = document.querySelectorAll("#song-list li");
-const playerElement = document.querySelector(".player"); // For adding playing class
 
-// Sample songs data - Replace with your actual song files and covers
-const songs = [
-  {
-    title: "Still D.R.E.",
-    artist: "Dr. Dre ft. Snoop Dogg",
-    src: "music/song1.mp3",
-    cover: "covers/cover1.jpg",
-  },
-  {
-    title: "Bohemian Rhapsody",
-    artist: "Queen",
-    src: "music/song2.mp3",
-    cover: "covers/cover2.jpg",
-  },
-  {
-    title: "Billie Jean",
-    artist: "Michael Jackson",
-    src: "music/song3.mp3",
-    cover: "covers/cover3.jpg",
-  },
-  {
-    title: "Smells Like Teen Spirit",
-    artist: "Nirvana",
-    src: "music/song4.mp3",
-    cover: "covers/cover4.jpg",
-  }
-];
+const search = document.getElementById("search");
 
-let currentIndex = 0;
-let isShuffle = false;
-let isRepeat = false;
-let audioDuration = 0; // To store audio duration
+const downloadBtn = document.getElementById("downloadBtn");
 
-// Local Storage Keys
-const CURRENT_SONG_INDEX_KEY = "musicPlayerCurrentSongIndex";
-const SHUFFLE_STATE_KEY = "musicPlayerShuffleState";
-const REPEAT_STATE_KEY = "musicPlayerRepeatState";
-const VOLUME_KEY = "musicPlayerVolume";
+const playBtn = document.getElementById("play");
+const heroPlay = document.getElementById("heroPlay");
 
-// --- Initialization and Local Storage ---
+let currentSong =
+parseInt(localStorage.getItem("lastSong")) || 0;
 
-function initializePlayer() {
-  const savedIndex = localStorage.getItem(CURRENT_SONG_INDEX_KEY);
-  const savedShuffle = localStorage.getItem(SHUFFLE_STATE_KEY);
-  const savedRepeat = localStorage.getItem(REPEAT_STATE_KEY);
-  const savedVolume = localStorage.getItem(VOLUME_KEY);
+let repeatMode = false;
 
-  // Set initial values from local storage or defaults
-  currentIndex = savedIndex ? parseInt(savedIndex) : 0;
-  isShuffle = savedShuffle ? JSON.parse(savedShuffle) : false;
-  isRepeat = savedRepeat ? JSON.parse(savedRepeat) : false;
-  const vol = savedVolume ? parseFloat(savedVolume) : 0.8;
+let likedSongs =
+JSON.parse(localStorage.getItem("likedSongs")) || [];
 
-  volume.value = vol * 100;
-  audio.volume = vol;
+function formatTime(seconds){
 
-  // Update button states based on saved settings
-  if (isShuffle) shuffleBtn.classList.add("active-mode");
-  if (isRepeat) repeatBtn.classList.add("active-mode");
+if(isNaN(seconds)) return "0:00";
 
-  // Load the song based on the saved index
-  loadSong(currentIndex);
+const min = Math.floor(seconds / 60);
+
+const sec = Math.floor(seconds % 60);
+
+return `${min}:${String(sec).padStart(2,"0")}`;
+
 }
 
-function savePlayerState() {
-  localStorage.setItem(CURRENT_SONG_INDEX_KEY, currentIndex);
-  localStorage.setItem(SHUFFLE_STATE_KEY, isShuffle);
-  localStorage.setItem(REPEAT_STATE_KEY, isRepeat);
-  localStorage.setItem(VOLUME_KEY, audio.volume);
-}
+function loadSong(index){
 
-// --- Time Formatting ---
+const song = songs[index];
 
-function formatTime(seconds) {
-  // Handles cases where seconds might be NaN or Infinity (e.g., before metadata loads)
-  if (isNaN(seconds) || seconds === Infinity) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
-  return `${mins}:${secs}`;
-}
+title.textContent = song.title;
+artist.textContent = song.artist;
 
-// --- UI Updates ---
+miniTitle.textContent = song.title;
+miniArtist.textContent = song.artist;
 
-function updateActiveSong() {
-  songItems.forEach(item => item.classList.remove("active"));
-  // Ensure the index is valid before trying to add the class
-  if (songItems[currentIndex]) {
-    songItems[currentIndex].classList.add("active");
-  }
-}
+cover.src = song.cover;
+miniCover.src = song.cover;
 
-function loadSong(index) {
-  // Basic validation for the index
-  if (index < 0 || index >= songs.length) {
-    console.error("Invalid song index:", index);
-    return;
-  }
-  const song = songs[index];
-  audio.src = song.src;
-  cover.src = song.cover;
-  songTitle.textContent = song.title;
-  artist.textContent = song.artist;
-  updateActiveSong();
+audio.src = song.file;
 
-  // Reset progress bar and time when loading a new song
-  progress.style.width = "0%";
-  currentTimeEl.textContent = "0:00";
-  durationEl.textContent = "0:00"; // Reset duration as well
-}
+downloadBtn.href = song.file;
 
-function togglePlayPauseIcon(isPlaying) {
-  playBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
-  playerElement.classList.toggle("playing", isPlaying); // Add/remove class for cover animation
-}
+localStorage.setItem(
+"lastSong",
+index
+);
 
-// --- Core Player Logic ---
+document
+.querySelectorAll("#playlist li")
+.forEach((item,i)=>{
 
-function playSong() {
-  if (!audio.src) return; // Don't play if no source is set
-  // Attempt to play and catch potential errors (e.g., user gesture required)
-  audio.play().catch(error => {
-    console.warn("Playback failed:", error);
-    // You might want to display a message to the user here
-  });
-}
+item.classList.toggle(
+"active",
+i === index
+);
 
-function pauseSong() {
-  audio.pause();
-}
-
-function togglePlay() {
-  if (audio.paused) {
-    playSong();
-  } else {
-    pauseSong();
-  }
-}
-
-function getRandomIndex() {
-  if (songs.length === 0) return -1; // Handle empty playlist
-  if (songs.length === 1) return 0; // Only one song, return index 0
-
-  let randomIndex = Math.floor(Math.random() * songs.length);
-  // Ensure the random index is different from the current one, if possible
-  while (randomIndex === currentIndex) {
-    randomIndex = Math.floor(Math.random() * songs.length);
-  }
-  return randomIndex;
-}
-
-function playNextSong() {
-  if (songs.length === 0) return; // Do nothing if playlist is empty
-
-  currentIndex = isShuffle ? getRandomIndex() : (currentIndex + 1) % songs.length;
-  loadSong(currentIndex);
-  playSong();
-  savePlayerState(); // Save state after changing song
-}
-
-function playPrevSong() {
-  if (songs.length === 0) return; // Do nothing if playlist is empty
-
-  // Calculate previous index, handling wrap-around and shuffle
-  currentIndex = isShuffle ? getRandomIndex() : (currentIndex - 1 + songs.length) % songs.length;
-  loadSong(currentIndex);
-  playSong();
-  savePlayerState(); // Save state after changing song
-}
-
-// --- Event Listeners ---
-
-playBtn.addEventListener("click", togglePlay);
-nextBtn.addEventListener("click", playNextSong);
-prevBtn.addEventListener("click", playPrevSong);
-
-shuffleBtn.addEventListener("click", () => {
-  isShuffle = !isShuffle;
-  shuffleBtn.classList.toggle("active-mode", isShuffle);
-  savePlayerState(); // Save shuffle state
 });
 
-repeatBtn.addEventListener("click", () => {
-  isRepeat = !isRepeat;
-  repeatBtn.classList.toggle("active-mode", isRepeat);
-  savePlayerState(); // Save repeat state
+}
+
+songs.forEach((song,index)=>{
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+<div>
+<strong>${song.title}</strong>
+<br>
+<small>${song.artist}</small>
+</div>
+`;
+
+li.addEventListener("click",()=>{
+
+currentSong = index;
+
+loadSong(index);
+
+audio.play();
+
+cover.classList.add("playing");
+
+updatePlayIcons();
+
 });
 
-songItems.forEach((item, index) => {
-  item.addEventListener("click", () => {
-    if (index !== currentIndex) {
-      currentIndex = index;
-      loadSong(currentIndex);
-      playSong();
-      savePlayerState(); // Save state when a new song is selected
-    } else {
-      // If clicking the currently active song, toggle play/pause
-      togglePlay();
-    }
-  });
+playlist.appendChild(li);
+
 });
 
-// Event fired when the browser has finished loading the media data
-audio.addEventListener("loadedmetadata", () => {
-  audioDuration = audio.duration; // Store the duration
-  durationEl.textContent = formatTime(audioDuration);
+function updatePlayIcons(){
+
+if(audio.paused){
+
+playBtn.innerHTML =
+'<i class="fa-solid fa-play"></i>';
+
+heroPlay.innerHTML =
+'<i class="fa-solid fa-play"></i> پخش';
+
+cover.classList.remove("playing");
+
+}else{
+
+playBtn.innerHTML =
+'<i class="fa-solid fa-pause"></i>';
+
+heroPlay.innerHTML =
+'<i class="fa-solid fa-pause"></i> توقف';
+
+cover.classList.add("playing");
+
+}
+
+}
+
+function togglePlay(){
+
+if(audio.paused){
+
+audio.play();
+
+}else{
+
+audio.pause();
+
+}
+
+updatePlayIcons();
+
+}
+
+playBtn.addEventListener(
+"click",
+togglePlay
+);
+
+heroPlay.addEventListener(
+"click",
+togglePlay
+);
+
+document
+.getElementById("next")
+.addEventListener("click",()=>{
+
+currentSong++;
+
+if(currentSong >= songs.length){
+
+currentSong = 0;
+
+}
+
+loadSong(currentSong);
+
+audio.play();
+
+updatePlayIcons();
+
 });
 
-// Event fired when the playback position is updated
-audio.addEventListener("timeupdate", () => {
-  const currentTime = audio.currentTime;
-  currentTimeEl.textContent = formatTime(currentTime);
-  // Update progress bar only if duration is available and valid
-  if (!isNaN(audioDuration) && audioDuration > 0) {
-    progress.style.width = `${(currentTime / audioDuration) * 100}%`;
-  }
+document
+.getElementById("prev")
+.addEventListener("click",()=>{
+
+currentSong--;
+
+if(currentSong < 0){
+
+currentSong = songs.length - 1;
+
+}
+
+loadSong(currentSong);
+
+audio.play();
+
+updatePlayIcons();
+
 });
 
-// Event fired when the user clicks on the progress container
-progressContainer.addEventListener("click", (e) => {
-  // Prevent seeking if audio source is not ready or duration is invalid
-  if (!audio.src || isNaN(audioDuration) || audioDuration === 0) return;
+document
+.getElementById("shuffle")
+.addEventListener("click",()=>{
 
-  const width = progressContainer.clientWidth; // Get the width of the progress bar container
-  const clickX = e.offsetX; // Get the horizontal coordinate of the click within the container
-  // Calculate the new current time based on click position
-  audio.currentTime = (clickX / width) * audioDuration;
+currentSong =
+Math.floor(
+Math.random()*songs.length
+);
+
+loadSong(currentSong);
+
+audio.play();
+
+updatePlayIcons();
+
 });
 
-// Event fired when the current song ends
-audio.addEventListener("ended", () => {
-  if (isRepeat) {
-    // If repeat is on, reset current time and play immediately
-    audio.currentTime = 0;
-    playSong();
-    return; // Stop further processing for 'ended' event
-  }
-  // If repeat is off, play the next song automatically
-  playNextSong();
+document
+.getElementById("repeat")
+.addEventListener("click",()=>{
+
+repeatMode = !repeatMode;
+
 });
 
-// Update play/pause icon and animation class when playback starts or pauses
-audio.addEventListener("play", () => {
-  togglePlayPauseIcon(true);
+audio.addEventListener(
+"timeupdate",
+()=>{
+
+if(audio.duration){
+
+progress.value =
+(audio.currentTime /
+audio.duration) * 100;
+
+currentTimeEl.textContent =
+formatTime(
+audio.currentTime
+);
+
+durationEl.textContent =
+formatTime(
+audio.duration
+);
+
+}
+
 });
 
-audio.addEventListener("pause", () => {
-  togglePlayPauseIcon(false);
+progress.addEventListener(
+"input",
+()=>{
+
+if(audio.duration){
+
+audio.currentTime =
+(progress.value / 100)
+* audio.duration;
+
+}
+
 });
 
-// Event listener for volume slider changes
-volume.addEventListener("input", () => {
-  audio.volume = volume.value / 100; // Set audio volume (0.0 to 1.0)
-  savePlayerState(); // Save volume state
+volume.addEventListener(
+"input",
+()=>{
+
+audio.volume =
+volume.value / 100;
+
 });
 
-// --- Initial Load ---
-initializePlayer(); // Load saved state when the page loads
+audio.addEventListener(
+"ended",
+()=>{
+
+if(repeatMode){
+
+audio.play();
+
+}else{
+
+document
+.getElementById("next")
+.click();
+
+}
+
+});
+
+search.addEventListener(
+"input",
+()=>{
+
+const value =
+search.value.toLowerCase();
+
+document
+.querySelectorAll("#playlist li")
+.forEach(li=>{
+
+li.style.display =
+li.textContent
+.toLowerCase()
+.includes(value)
+?
+"flex"
+:
+"none";
+
+});
+
+});
+
+document
+.getElementById("likeBtn")
+.addEventListener("click",()=>{
+
+const song =
+songs[currentSong];
+
+if(
+!likedSongs.includes(song.title)
+){
+
+likedSongs.push(song.title);
+
+localStorage.setItem(
+"likedSongs",
+JSON.stringify(
+likedSongs
+)
+);
+
+alert(
+"آهنگ به علاقه‌مندی‌ها اضافه شد ❤️"
+);
+
+}
+
+});
+
+audio.addEventListener(
+"play",
+updatePlayIcons
+);
+
+audio.addEventListener(
+"pause",
+updatePlayIcons
+);
+
+audio.volume = 0.8;
+
+loadSong(currentSong);
+
+updatePlayIcons();

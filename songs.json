@@ -1,0 +1,43 @@
+[
+  {
+    "title": "Music",
+    "artist": "hiphopologist",
+    "file": "songs/music.mp3",
+    "cover": "covers/OIP (1).webp"
+  },
+
+  {
+    "title": "takdast jadid",
+    "artist": "majid ahmadi",
+    "file": "songs/Majid Ahmadi Ft Mohammad Esmali - Takdast Jadid Jashni.mp3",
+    "cover": "covers/OIP.webp"
+  },
+{
+     "title": "sogand",
+    "artist": "Hiphopologist",
+    "file": "songs/Hiphopologist - Sogand.mp3",
+    "cover": "covers/OIP (1).webp"
+  },
+  {
+     "title": "YDB",
+    "artist": "hiphopologist",
+    "file": "songs/Hiphopologist Ashkan Kagan_YDB(1).mp3",
+    "cover": "covers/OIP (1).webp"
+  },
+  {
+     "title": "Sharbast",
+    "artist": "hiphopologist",
+    "file": "songs/Hiphopologist - Sharbat.mp3",
+    "cover": "covers/OIP (1).webp"
+  },
+  {
+     "title": "dele dige",
+    "artist": "majid ahmadi",
+    "file": "songs/Dele Dige_Ahmadi.mp3",
+    "cover": "covers/OIP.webp"
+  }
+  
+   
+  
+
+]

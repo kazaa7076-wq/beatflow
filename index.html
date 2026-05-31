@@ -1,114 +1,244 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>پلیر موزیک Ultra Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>BeatFlow V5</title>
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
-  <div class="app">
+
+<div class="app">
+
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="brand">
-        <i class="fa-brands fa-spotify"></i>
-        <h1>Ultra Music</h1>
-      </div>
 
-      <p class="subtitle">پلی‌لیست</p>
+        <div class="logo">
+            <i class="fa-solid fa-music"></i>
+            <span>BeatFlow</span>
+        </div>
 
-      <ul id="song-list" class="playlist">
-        <li class="active" data-index="0">
-          <img src="covers/cover1.jpg" alt="cover">
-          <div class="song-meta">
-            <span>Still D.R.E.</span>
-            <small>Dr. Dre ft. Snoop Dogg</small>
-          </div>
-        </li>
-        <li data-index="1">
-          <img src="covers/cover2.jpg" alt="cover">
-          <div class="song-meta">
-            <span>Bohemian Rhapsody</span>
-            <small>Queen</small>
-          </div>
-        </li>
-        <li data-index="2">
-          <img src="covers/cover3.jpg" alt="cover">
-          <div class="song-meta">
-            <span>Billie Jean</span>
-            <small>Michael Jackson</small>
-          </div>
-        </li>
-        <li data-index="3">
-          <img src="covers/cover4.jpg" alt="cover">
-          <div class="song-meta">
-            <span>Smells Like Teen Spirit</span>
-            <small>Nirvana</small>
-          </div>
-        </li>
-      </ul>
+        <nav>
+
+            <a href="#" class="active">
+                <i class="fa-solid fa-house"></i>
+                خانه
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                جستجو
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-heart"></i>
+                مورد علاقه
+            </a>
+
+        </nav>
+
+        <div class="playlist-section">
+
+            <h3>پلی لیست</h3>
+
+            <input
+            type="text"
+            id="search"
+            placeholder="جستجوی آهنگ...">
+
+            <ul id="playlist"></ul>
+
+        </div>
+
     </aside>
 
-    <main class="player">
-      <div class="now-playing">
-        <div class="cover-container">
-          <img id="cover" src="covers/cover1.jpg" alt="cover">
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="hero">
+
+            <div class="hero-text">
+
+                <span class="badge">
+                    در حال پخش
+                </span>
+
+                <h1 id="title">
+                    Song 1
+                </h1>
+
+                <h3 id="artist">
+                    Artist 1
+                </h3>
+
+                <div class="hero-buttons">
+
+                    <button id="heroPlay">
+                        <i class="fa-solid fa-play"></i>
+                        پخش
+                    </button>
+
+                    <button id="likeBtn">
+                        <i class="fa-solid fa-heart"></i>
+                        علاقه‌مندی
+                    </button>
+
+                    <a
+                    id="downloadBtn"
+                    class="download-btn"
+                    href="#"
+                    download>
+
+                        <i class="fa-solid fa-download"></i>
+                        دانلود
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <img
+            id="cover"
+            src="covers/cover1.jpg"
+            alt="cover">
+
         </div>
-        <div class="track-info">
-          <h2 id="song-title">Still D.R.E.</h2>
-          <p id="artist">Dr. Dre ft. Snoop Dogg</p>
-        </div>
-      </div>
 
-      <div class="timer-row">
-        <span id="current-time">0:00</span>
-        <span id="duration">0:00</span>
-      </div>
+        <!-- Albums -->
 
-      <div class="progress-container" id="progress-container">
-        <div class="progress" id="progress"></div>
-      </div>
+        <section class="albums">
 
-      <div class="controls">
-        <button id="shuffle" class="icon-btn" title="Shuffle">
-          <i class="fa-solid fa-shuffle"></i>
-        </button>
+            <h2>محبوب ترین ها</h2>
 
-        <button id="prev" class="icon-btn big" title="Previous">
-          <i class="fa-solid fa-backward-step"></i>
-        </button>
+            <div class="album-grid">
 
-        <button id="play" class="play-btn" title="Play/Pause">
-          <i class="fa-solid fa-play"></i>
-        </button>
+                <div class="album-card">
+                    <img src="covers/OIP (1).webp">
+                    <h4>Album 1</h4>
+                </div>
 
-        <button id="next" class="icon-btn big" title="Next">
-          <i class="fa-solid fa-forward-step"></i>
-        </button>
+                <div class="album-card">
+                    <img src="covers/OIP (1).webp">
+                    <h4>Album 2</h4>
+                </div>
 
-        <button id="repeat" class="icon-btn" title="Repeat">
-          <i class="fa-solid fa-repeat"></i>
-        </button>
-      </div>
+                <div class="album-card">
+                    <img src="covers/OIP (1).webp">
+                    <h4>Album 3</h4>
+                </div>
 
-      <div class="volume-row">
-        <i class="fa-solid fa-volume-high"></i>
-        <input id="volume" type="range" min="0" max="100" value="80">
-      </div>
+                <div class="album-card">
+                    <img src="covers/OIP.webp">
+                    <h4>Album 4</h4>
+                </div>
 
-      <audio id="audio"></audio>
+                <div class="album-card">
+                    <img src="covers/OIP.webp">
+                    <h4>Album 5</h4>
+                </div>
+
+            </div>
+
+        </section>
+
     </main>
-  </div>
 
-  <script src="script.js"></script>
+</div>
+
+<!-- Player Bottom -->
+
+<footer class="player">
+
+    <div class="player-left">
+
+        <img
+        id="miniCover"
+        src="covers/cover1.jpg">
+
+        <div>
+
+            <h4 id="miniTitle">
+                Song 1
+            </h4>
+
+            <small id="miniArtist">
+                Artist 1
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="player-center">
+
+        <div class="controls">
+
+            <button id="shuffle">
+                <i class="fa-solid fa-shuffle"></i>
+            </button>
+
+            <button id="prev">
+                <i class="fa-solid fa-backward-step"></i>
+            </button>
+
+            <button id="play">
+                <i class="fa-solid fa-play"></i>
+            </button>
+
+            <button id="next">
+                <i class="fa-solid fa-forward-step"></i>
+            </button>
+
+            <button id="repeat">
+                <i class="fa-solid fa-repeat"></i>
+            </button>
+
+        </div>
+
+        <div class="progress-box">
+
+            <span id="currentTime">
+                0:00
+            </span>
+
+            <input
+            type="range"
+            id="progress"
+            value="0">
+
+            <span id="duration">
+                0:00
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="player-right">
+
+        <i class="fa-solid fa-volume-high"></i>
+
+        <input
+        type="range"
+        id="volume"
+        min="0"
+        max="100"
+        value="80">
+
+    </div>
+
+</footer>
+
+<audio id="audio"></audio>
+
+<script src="script.js"></script>
+
 </body>
 </html>
